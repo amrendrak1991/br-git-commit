@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {useHistory} from "react-router-dom";
-import {DatePicker, Space} from "antd";
+import {Button, DatePicker, Divider, PageHeader, Space, Table} from "antd";
 import moment from 'moment'
+import {commitsEndpoint} from "../util/Const";
+import Layout, {Content} from "antd/es/layout/layout";
 
 const {RangePicker} = DatePicker;
 const dateFormat = 'YYYY/MM/DD';
@@ -13,9 +15,29 @@ function Commits() {
     const [dateSince, setDateSince] = useState(moment().startOf('month').toISOString());
     const [dateUntil, setDateUntil] = useState(moment().toISOString());
     const history = useHistory();
+    const columns = [
+        {
+            title: 'Commit message',
+            dataIndex: ['commit','message'],
+            render: text => <span>{text}</span>,
+        },
+        {
+            title: 'Author',
+            dataIndex: ['commit','author','name']
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (text, record) => (
+                <Space size="middle">
+                    <Button type={'link'} onClick={() => seeMoreDetails(record)}>See details</Button>
+                </Space>
+            ),
+        },
+    ];
 
     function getCommitList() {
-        let apiEndpoint = "https://api.github.com/repos/amrendrak1991/br-git-commit/commits?per_page=100&sha=fd0db9583d99b4c6c3fcb9045969952bc4add991";
+        let apiEndpoint = commitsEndpoint;
         apiEndpoint += '&since' + dateSince + '&until' + dateUntil
         /*fetch(apiEndpoint)
             .then(res => res.json())
@@ -438,7 +460,6 @@ function Commits() {
             setDateSince(dates[0]);
             setDateUntil(dates[1])
         } else {
-            //clear state
             setDateSince(moment().startOf('month').toISOString());
             setDateUntil(moment().toISOString());
         }
@@ -446,28 +467,26 @@ function Commits() {
 
     return (
         <div>
-            <h2>Commit list</h2>
-            <Space direction="vertical" size={12}>
-                <RangePicker
-                    defaultValue={[moment(moment().startOf('month').format(dateFormat), dateFormat),
-                        moment(moment().format(dateFormat), dateFormat)]}
-                    ranges={{
-                        Today: [moment(), moment()],
-                        'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    }}
-                    onChange={onDateChange}
-                    format={'DD/MM/YYYY'}
-                    allowClear={false}
-                />
-            </Space>
-            {items.length && items.map((data) => {
-                return <div>
-                    {data.commit.message.split("\n").map((msg, key) => {
-                        return <span key={key}>{msg}&nbsp;</span>;
-                    })}
-                    <button onClick={() => seeMoreDetails(data)}>See details</button>
-                </div>
-            })}
+            <PageHeader title="Commit list"/>
+            <Content style={{padding: 24, margin: 0, minHeight: 280,}}>
+                <Space direction="vertical" size={12}>
+                    <label>Date filter</label>
+                    <RangePicker
+                        defaultValue={[moment(moment().startOf('month').format(dateFormat), dateFormat),
+                            moment(moment().format(dateFormat), dateFormat)]}
+                        ranges={{
+                            Today: [moment(), moment()],
+                            'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        }}
+                        onChange={onDateChange}
+                        format={'DD/MM/YYYY'}
+                        allowClear={false}
+                    />
+                </Space>
+                <Divider />
+                <Table columns={columns} pagination={{ position: ['bottomRight'] }} dataSource={items}/>
+            </Content>
+
         </div>
     );
 };

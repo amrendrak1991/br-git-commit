@@ -1,0 +1,1 @@
+export const commitsEndpoint = "https://api.github.com/repos/amrendrak1991/br-git-commit/commits?per_page=100&sha=fd0db9583d99b4c6c3fcb9045969952bc4add991"
