@@ -1,12 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import Commit from "./Commit";
+import React, {useState, useEffect} from 'react';
+import {useHistory} from "react-router-dom";
+import {DatePicker, Space} from "antd";
+import moment from 'moment'
+
+const {RangePicker} = DatePicker;
+const dateFormat = 'YYYY/MM/DD';
 
 function Commits() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
-    useEffect(() => {
-        /*fetch("https://api.github.com/repos/amrendrak1991/br-git-commit/commits?per_page=100&sha=fd0db9583d99b4c6c3fcb9045969952bc4add991")
+    const [dateSince, setDateSince] = useState(moment().startOf('month').toISOString());
+    const [dateUntil, setDateUntil] = useState(moment().toISOString());
+    const history = useHistory();
+
+    function getCommitList() {
+        let apiEndpoint = "https://api.github.com/repos/amrendrak1991/br-git-commit/commits?per_page=100&sha=fd0db9583d99b4c6c3fcb9045969952bc4add991";
+        apiEndpoint += '&since' + dateSince + '&until' + dateUntil
+        /*fetch(apiEndpoint)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -406,18 +417,56 @@ function Commits() {
                     "type": "User",
                     "site_admin": false
                 },
-                "parents": [
-
-                ]
+                "parents": []
             }
         ])
-    }, [])
+    }
+
+    useEffect(() => {
+        getCommitList();
+    }, [dateUntil])
+
+    function seeMoreDetails(data) {
+        history.push('/commit', {
+            commitData: data,
+        })
+    }
+
+    function onDateChange(dates, dateStrings) {
+        if (dates) {
+            console.log('From: ', dates[0].toISOString(), ', to: ', dates[1].toISOString());
+            setDateSince(dates[0]);
+            setDateUntil(dates[1])
+        } else {
+            //clear state
+            setDateSince(moment().startOf('month').toISOString());
+            setDateUntil(moment().toISOString());
+        }
+    }
 
     return (
         <div>
             <h2>Commit list</h2>
-            {items.length && items.map((commit)=>{
-                return <Commit data={commit} />
+            <Space direction="vertical" size={12}>
+                <RangePicker
+                    defaultValue={[moment(moment().startOf('month').format(dateFormat), dateFormat),
+                        moment(moment().format(dateFormat), dateFormat)]}
+                    ranges={{
+                        Today: [moment(), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    }}
+                    onChange={onDateChange}
+                    format={'DD/MM/YYYY'}
+                    allowClear={false}
+                />
+            </Space>
+            {items.length && items.map((data) => {
+                return <div>
+                    {data.commit.message.split("\n").map((msg, key) => {
+                        return <span key={key}>{msg}&nbsp;</span>;
+                    })}
+                    <button onClick={() => seeMoreDetails(data)}>See details</button>
+                </div>
             })}
         </div>
     );

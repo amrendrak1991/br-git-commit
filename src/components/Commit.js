@@ -1,15 +1,23 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 function Commit(props) {
-    const commit = props.data.commit;
-    debugger
+    const history = useHistory();
+    if(!props.location.state){
+        history.push('/commits');
+    }
+    const commitData = props.location.state.commitData;
     return (
         <div>
-            <h1>
-                {commit.message.split("\n").map((msg,key) => {
-                    return <span key={key}>{msg}&nbsp;</span>;
-                })}
-            </h1>
+            <div>
+                {commitData.commit.message}
+            </div>
+            <div>
+                {commitData.commit.author.name}
+            </div>
+            <div>
+                {commitData.commit.author.date}
+            </div>
         </div>
     );
 }

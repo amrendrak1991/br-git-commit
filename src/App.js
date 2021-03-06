@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import Home from "./components/Home";
 import Commits from "./components/Commits";
+import Commit from "./components/Commit";
+import 'antd/dist/antd.css';
 function App() {
   return (
       <Router>
@@ -28,6 +30,10 @@ function App() {
             <Route path="/commits">
               <Commits />
             </Route>
+            <Route
+                path="/commit"
+                render={(props) => <Commit {...props}/>}
+            />
           </Switch>
         </div>
       </Router>
