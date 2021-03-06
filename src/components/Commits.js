@@ -15,6 +15,7 @@ function Commits() {
                     setItems(result);
                     console.log('----------------------------------------------------------------');
                     console.log(JSON.stringify(result));
+
                     console.log('----------------------------------------------------------------');
                 },
                 (error) => {
