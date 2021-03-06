@@ -1,9 +1,9 @@
 import React from "react";
 
-function Commit() {
+function Commit(props) {
     return (
         <div>
-            <h2>commit</h2>
+            <h2>{props.data.commit.message}</h2>
         </div>
     );
 }

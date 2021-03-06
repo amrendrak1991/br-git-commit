@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Commit from "./Commit";
 
 function Commits() {
 
@@ -6,7 +7,7 @@ function Commits() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
     useEffect(() => {
-        fetch("https://api.github.com/repositories/2126244/commits?per_page=10&sha=7a8d6b19767a92b1c4ea45d88d4eedc2b29bf1fa")
+        fetch("https://api.github.com/repos/amrendrak1991/br-git-commit/commits?per_page=10&sha=dee5a797c38127d852543d76bce59529e3940636")
             .then(res => res.json())
             .then(
                 (result) => {
@@ -26,7 +27,9 @@ function Commits() {
     return (
         <div>
             <h2>Commit list</h2>
-            {items.length && <h3>{JSON.stringify(items)}</h3>}
+            {items.length && items.map((commit)=>{
+                return <Commit data={commit}/>
+            })}
         </div>
     );
 }
