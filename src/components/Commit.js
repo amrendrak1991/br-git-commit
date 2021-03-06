@@ -1,9 +1,15 @@
 import React from "react";
 
 function Commit(props) {
+    const commit = props.data.commit;
+    debugger
     return (
         <div>
-            <h2>{props.data.commit.message}</h2>
+            <h1>
+                {commit.message.split("\n").map((msg,key) => {
+                    return <span key={key}>{msg}&nbsp;</span>;
+                })}
+            </h1>
         </div>
     );
 }
